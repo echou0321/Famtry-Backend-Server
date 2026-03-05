@@ -16,6 +16,10 @@ app.use(morgan('dev'));
 // MongoDB Connection
 const connectDB = async () => {
   try {
+    if (!process.env.MONGODB_URI) {
+      throw new Error('MONGODB_URI environment variable is not set. Please configure it in your Render dashboard.');
+    }
+    
     const conn = await mongoose.connect(process.env.MONGODB_URI, {
       // These options are recommended for MongoDB Atlas
       // Remove or adjust based on your MongoDB version
