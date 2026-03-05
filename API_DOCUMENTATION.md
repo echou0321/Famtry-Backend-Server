@@ -9,16 +9,37 @@ http://localhost:5001/api
 
 ### User Endpoints
 
-#### Create User
-- **POST** `/api/users`
+#### Register User
+- **POST** `/api/users/register`
 - **Body:**
   ```json
   {
     "name": "John Doe",
+    "email": "john@example.com",
+    "password": "password123",
     "familyId": "optional-family-id"
   }
   ```
-- **Response:** Created user object
+- **Response:** Created user object (password not included)
+- **Note:** Email must be unique. Password must be at least 6 characters.
+
+#### Login User
+- **POST** `/api/users/login`
+- **Body:**
+  ```json
+  {
+    "email": "john@example.com",
+    "password": "password123"
+  }
+  ```
+- **Response:** 
+  ```json
+  {
+    "message": "Login successful",
+    "user": { ... }
+  }
+  ```
+- **Note:** Returns 401 if email/password is invalid
 
 #### Get User
 - **GET** `/api/users/:id`
