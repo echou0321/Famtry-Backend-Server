@@ -5,7 +5,7 @@ const morgan = require('morgan');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5001; // Render sets PORT automatically
 
 // Middleware
 app.use(cors());
@@ -48,6 +48,7 @@ app.get('/health', (req, res) => {
 });
 
 // API Routes
+app.use('/api', require('./routes/index'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/families', require('./routes/familyRoutes'));
 app.use('/api/items', require('./routes/itemRoutes'));
