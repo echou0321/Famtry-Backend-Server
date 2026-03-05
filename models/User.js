@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
   familyId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Family',
-    required: [true, 'Family ID is required']
+    default: null // Optional - user can join family later
   }
 }, {
   timestamps: true // Automatically adds createdAt and updatedAt
