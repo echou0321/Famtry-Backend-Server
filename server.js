@@ -5,7 +5,7 @@ const morgan = require('morgan');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Middleware
 app.use(cors());
@@ -44,17 +44,13 @@ app.get('/health', (req, res) => {
 });
 
 // API Routes
-// app.use('/api/users', require('./routes/userRoutes'));
-// app.use('/api/posts', require('./routes/postRoutes'));
+app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/families', require('./routes/familyRoutes'));
+app.use('/api/items', require('./routes/itemRoutes'));
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ 
-    message: 'Something went wrong!', 
-    error: process.env.NODE_ENV === 'development' ? err.message : {}
-  });
-});
+// Error handling middleware (must be after routes)
+const errorHandler = require('./middleware/errorHandler');
+app.use(errorHandler);
 
 // 404 handler
 app.use((req, res) => {

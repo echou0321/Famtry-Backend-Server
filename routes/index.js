@@ -1,13 +1,17 @@
 const express = require('express');
 const router = express.Router();
 
-// Example route
+// API info endpoint
 router.get('/', (req, res) => {
-  res.json({ message: 'API is working' });
+  res.json({ 
+    message: 'Famtry API',
+    version: '1.0.0',
+    endpoints: {
+      users: '/api/users',
+      families: '/api/families',
+      items: '/api/items'
+    }
+  });
 });
-
-// Import and use other route files here
-// router.use('/users', require('./userRoutes'));
-// router.use('/posts', require('./postRoutes'));
 
 module.exports = router;
