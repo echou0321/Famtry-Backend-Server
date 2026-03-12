@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { Family, User } = require('../models');
 
+console.log('Famtry: familyRoutes.js loaded (deployment check)');
+
 // Create a new family
 // POST /api/families
 // Body: { name: string, userId?: ObjectId }
@@ -106,6 +108,8 @@ router.post('/:id/leave', async (req, res, next) => {
   try {
     const { userId } = req.body;
     const familyId = req.params.id;
+
+    console.log('Leave family endpoint hit', { familyId, userId });
 
     if (!userId) {
       return res.status(400).json({ error: 'User ID is required' });
