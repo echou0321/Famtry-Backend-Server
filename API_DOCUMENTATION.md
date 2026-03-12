@@ -78,6 +78,29 @@ http://localhost:5001/api
   ```
 - **Response:** Updated family object with new member
 
+#### Leave Family
+- **POST** `/api/families/:id/leave`
+- **Body:**
+  ```json
+  {
+    "userId": "user-id"
+  }
+  ```
+- **Response:** `{ "message": "Successfully left the family", "familyId": "..." }`
+- **Note:** User must belong to this family. Clears the user's family and removes them from the family's members list.
+
+#### Add Family Member
+- **POST** `/api/families/:id/members`
+- **Body:**
+  ```json
+  {
+    "userIdToAdd": "user-id-to-add",
+    "addedByUserId": "existing-member-user-id"
+  }
+  ```
+- **Response:** Updated family object with new member
+- **Note:** Only an existing family member can add someone. The user being added must not already belong to a family.
+
 #### Get Family Members
 - **GET** `/api/families/:id/members`
 - **Response:** Array of family members

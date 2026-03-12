@@ -99,6 +99,99 @@ router.post('/:id/join', async (req, res, next) => {
   }
 });
 
+// Leave a family
+// POST /api/families/:id/leave
+// Body: { userId: ObjectId }
+router.post('/:id/leave', async (req, res, next) => {
+  try {
+    const { userId } = req.body;
+    const familyId = req.params.id;
+
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (user.familyId?.toString() !== familyId) {
+      return res.status(400).json({ error: 'User does not belong to this family' });
+    }
+
+    const family = await Family.findById(familyId);
+    if (!family) {
+      return res.status(404).json({ error: 'Family not found' });
+    }
+
+    user.familyId = null;
+    await user.save();
+
+    family.members = family.members.filter(
+      (memberId) => memberId.toString() !== userId
+    );
+    await family.save();
+
+    res.json({ message: 'Successfully left the family', familyId });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Add a family member (by existing member: invite by userId)
+// POST /api/families/:id/members
+// Body: { userIdToAdd: ObjectId, addedByUserId: ObjectId }
+router.post('/:id/members', async (req, res, next) => {
+  try {
+    const { userIdToAdd, addedByUserId } = req.body;
+    const familyId = req.params.id;
+
+    if (!userIdToAdd || !addedByUserId) {
+      return res.status(400).json({
+        error: 'userIdToAdd and addedByUserId are required'
+      });
+    }
+
+    const [userToAdd, addedByUser, family] = await Promise.all([
+      User.findById(userIdToAdd),
+      User.findById(addedByUserId),
+      Family.findById(familyId)
+    ]);
+
+    if (!userToAdd) {
+      return res.status(404).json({ error: 'User to add not found' });
+    }
+    if (!addedByUser) {
+      return res.status(404).json({ error: 'Requesting user not found' });
+    }
+    if (!family) {
+      return res.status(404).json({ error: 'Family not found' });
+    }
+
+    if (addedByUser.familyId?.toString() !== familyId) {
+      return res.status(403).json({ error: 'Only a family member can add new members' });
+    }
+
+    if (userToAdd.familyId) {
+      return res.status(400).json({ error: 'User already belongs to a family' });
+    }
+
+    userToAdd.familyId = family._id;
+    await userToAdd.save();
+
+    if (!family.members.some((id) => id.toString() === userIdToAdd)) {
+      family.members.push(userToAdd._id);
+      await family.save();
+    }
+
+    const updatedFamily = await Family.findById(familyId).populate('members', 'name');
+    res.status(201).json(updatedFamily);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Get family members
 // GET /api/families/:id/members
 router.get('/:id/members', async (req, res, next) => {
